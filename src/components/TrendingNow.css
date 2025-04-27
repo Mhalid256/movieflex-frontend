@@ -1,0 +1,45 @@
+.trending-section {
+    background-color: #000;
+    color: white;
+    padding: 40px 20px;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .movie-carousel {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding-bottom: 10px;
+  }
+  
+  .movie-card {
+    min-width: 200px;
+    position: relative;
+  }
+  
+  .movie-card img {
+    width: 100%;
+    border-radius: 8px;
+  }
+  
+  .number-badge {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 50%;
+    font-size: 1rem;
+  }
+  
+  .movie-title {
+    margin-top: 5px;
+    text-align: center;
+  }
+  
