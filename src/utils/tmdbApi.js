@@ -1,8 +1,9 @@
 // utils/tmdbApi.js
 import axios from "axios";
 
-const API_KEY = "7f602bb21d9a23e77e110e48883aebf3"; // Replace this with your actual API key
-const BASE_URL = "https://api.themoviedb.org/3";
+// Get the API key and Base URL from environment variables
+const API_KEY = process.env.REACT_APP_TMDB_API_KEY; // Use the API key from environment variables
+const BASE_URL = process.env.REACT_APP_BASE_URL || "https://api.themoviedb.org/3"; // Default to the TMDB base URL if not set
 
 // Fetch movie genres
 export const fetchGenres = async () => {
