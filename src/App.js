@@ -1,3 +1,9 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+
+
+
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
@@ -8,6 +14,7 @@ import Signup from "./pages/Signup";
 import TVShows from "./pages/TVShows";
 import UserListedMovies from "./pages/UserListedMovies";
 import MovieTrailer from "./pages/MovieTrailer";
+import Checkout from "./pages/Checkout"; // your checkout page
 
 export default function App() {
   return (
@@ -22,6 +29,7 @@ export default function App() {
         <Route exact path="/mylist" element={<UserListedMovies />} />
         <Route exact path="/" element={<Netflix />} />
         <Route exact path="/movie" element={<MovieTrailer />} />
+        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
 
       </Routes>
     </BrowserRouter>
