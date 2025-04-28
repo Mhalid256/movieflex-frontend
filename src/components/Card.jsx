@@ -41,11 +41,13 @@ export default React.memo(function Card({ index, movieData, isLiked = false }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <img
-        src={`https://image.tmdb.org/t/p/w500${movieData.image}`}
-        alt="card"
-        onClick={() => navigate("/player")}
-      />
+      <div className="image-container">
+        <img
+          src={`https://image.tmdb.org/t/p/w500${movieData.image}`}
+          alt="card"
+          onClick={() => navigate("/player")}
+        />
+      </div>
 
       {isHovered && (
         <div className="hover">
@@ -94,8 +96,8 @@ export default React.memo(function Card({ index, movieData, isLiked = false }) {
             </div>
             <div className="genres flex">
               <ul className="flex">
-                {movieData.genres.map((genre) => (
-                  <li>{genre}</li>
+                {movieData.genres.map((genre, idx) => (
+                  <li key={idx}>{genre}</li>
                 ))}
               </ul>
             </div>
@@ -108,16 +110,32 @@ export default React.memo(function Card({ index, movieData, isLiked = false }) {
 
 const Container = styled.div`
   max-width: 230px;
-  width: 230px;
+  width: 100%;
   height: 100%;
   cursor: pointer;
   position: relative;
-  img {
-    border-radius: 0.2rem;
+
+  .image-container {
+    position: relative;
     width: 100%;
-    height: 100%;
-    z-index: 10;
+    height: 300px; /* Poster card height */
+    overflow: hidden;
+    border-radius: 0.2rem;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 0.2rem;
+      transition: transform 0.3s ease;
+    }
+
+    /* Hover effect for image scaling */
+    &:hover img {
+      transform: scale(1.05);
+    }
   }
+
   .hover {
     z-index: 99;
     height: max-content;
@@ -129,9 +147,11 @@ const Container = styled.div`
     box-shadow: rgba(0, 0, 0, 0.75) 0px 3px 10px;
     background-color: #181818;
     transition: 0.3s ease-in-out;
+
     .image-video-container {
       position: relative;
       height: 140px;
+
       img {
         width: 100%;
         height: 140px;
@@ -151,10 +171,12 @@ const Container = styled.div`
         position: absolute;
       }
     }
+
     .info-container {
       padding: 1rem;
       gap: 0.5rem;
     }
+
     .icons {
       .controls {
         display: flex;
@@ -169,6 +191,7 @@ const Container = styled.div`
         }
       }
     }
+
     .genres {
       ul {
         gap: 1rem;
@@ -182,3 +205,4 @@ const Container = styled.div`
     }
   }
 `;
+
