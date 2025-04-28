@@ -11,7 +11,6 @@ import { onAuthStateChanged } from "firebase/auth";
 import { firebaseAuth } from "../utils/firebase-config";
 import { useDispatch } from "react-redux";
 import { removeMovieFromLiked } from "../store";
-import fallbackVideo from "../assets/video.mp4";
 
 export default React.memo(function Card({ index, movieData, isLiked = false }) {
   const navigate = useNavigate();
@@ -47,29 +46,22 @@ export default React.memo(function Card({ index, movieData, isLiked = false }) {
       );
       if (trailers.length > 0) {
         setTrailer(`https://www.youtube.com/embed/${trailers[0].key}?autoplay=1&mute=1`);
-      } else {
-        setTrailer(null); // no trailer found
       }
     } catch (error) {
       console.log(error);
-      setTrailer(null);
     }
-  };
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    fetchTrailer();
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setTrailer(null);
   };
 
   return (
     <Container
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => {
+        setIsHovered(true);
+        fetchTrailer();
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setTrailer(null);
+      }}
     >
       <div className="image-container">
         <img
@@ -82,25 +74,28 @@ export default React.memo(function Card({ index, movieData, isLiked = false }) {
       {isHovered && (
         <div className="hover">
           <div className="image-video-container">
-            {trailer ? (
+            <img
+              src={`https://image.tmdb.org/t/p/w500${movieData.image}`}
+              alt="card"
+              onClick={() => navigate("/player")}
+            />
+            {trailer && (
               <iframe
                 src={trailer}
-                title="Trailer"
-                width="100%"
-                height="140px"
-                style={{ border: "none", borderRadius: "0.3rem" }}
+                title="Movie Trailer"
+                frameBorder="0"
                 allow="autoplay; encrypted-media"
                 allowFullScreen
-                onClick={() => navigate("/player")}
-              />
-            ) : (
-              <video
-                src={fallbackVideo}
-                autoPlay
-                loop
-                muted
-                onClick={() => navigate("/player")}
-              />
+                style={{
+                  width: "100%",
+                  height: "140px",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  borderRadius: "0.3rem",
+                  zIndex: 5,
+                }}
+              ></iframe>
             )}
           </div>
           <div className="info-container flex column">
@@ -189,15 +184,24 @@ const Container = styled.div`
       position: relative;
       height: 140px;
 
-      img,
-      video,
-      iframe {
+      img {
         width: 100%;
         height: 140px;
         object-fit: cover;
         border-radius: 0.3rem;
         top: 0;
+        z-index: 4;
         position: absolute;
+      }
+
+      iframe {
+        width: 100%;
+        height: 140px;
+        border-radius: 0.3rem;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 5;
       }
     }
 
