@@ -11,13 +11,14 @@ import { onAuthStateChanged } from "firebase/auth";
 import { firebaseAuth } from "../utils/firebase-config";
 import { useDispatch } from "react-redux";
 import { removeMovieFromLiked } from "../store";
-import video from "../assets/video.mp4";
+import fallbackVideo from "../assets/video.mp4";
 
 export default React.memo(function Card({ index, movieData, isLiked = false }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isHovered, setIsHovered] = useState(false);
   const [email, setEmail] = useState(undefined);
+  const [trailer, setTrailer] = useState(null);
 
   onAuthStateChanged(firebaseAuth, (currentUser) => {
     if (currentUser) {
@@ -36,10 +37,39 @@ export default React.memo(function Card({ index, movieData, isLiked = false }) {
     }
   };
 
+  const fetchTrailer = async () => {
+    try {
+      const { data } = await axios.get(
+        `https://api.themoviedb.org/3/movie/${movieData.id}/videos?api_key=7f602bb21d9a23e77e110e48883aebf3`
+      );
+      const trailers = data.results.filter(
+        (video) => video.type === "Trailer" && video.site === "YouTube"
+      );
+      if (trailers.length > 0) {
+        setTrailer(`https://www.youtube.com/embed/${trailers[0].key}?autoplay=1&mute=1`);
+      } else {
+        setTrailer(null); // no trailer found
+      }
+    } catch (error) {
+      console.log(error);
+      setTrailer(null);
+    }
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    fetchTrailer();
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setTrailer(null);
+  };
+
   return (
     <Container
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="image-container">
         <img
@@ -52,18 +82,26 @@ export default React.memo(function Card({ index, movieData, isLiked = false }) {
       {isHovered && (
         <div className="hover">
           <div className="image-video-container">
-            <img
-              src={`https://image.tmdb.org/t/p/w500${movieData.image}`}
-              alt="card"
-              onClick={() => navigate("/player")}
-            />
-            <video
-              src={video}
-              autoPlay={true}
-              loop
-              muted
-              onClick={() => navigate("/player")}
-            />
+            {trailer ? (
+              <iframe
+                src={trailer}
+                title="Trailer"
+                width="100%"
+                height="140px"
+                style={{ border: "none", borderRadius: "0.3rem" }}
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+                onClick={() => navigate("/player")}
+              />
+            ) : (
+              <video
+                src={fallbackVideo}
+                autoPlay
+                loop
+                muted
+                onClick={() => navigate("/player")}
+              />
+            )}
           </div>
           <div className="info-container flex column">
             <h3 className="name" onClick={() => navigate("/player")}>
@@ -118,7 +156,7 @@ const Container = styled.div`
   .image-container {
     position: relative;
     width: 100%;
-    height: 300px; /* Poster card height */
+    height: 300px;
     overflow: hidden;
     border-radius: 0.2rem;
 
@@ -130,7 +168,6 @@ const Container = styled.div`
       transition: transform 0.3s ease;
     }
 
-    /* Hover effect for image scaling */
     &:hover img {
       transform: scale(1.05);
     }
@@ -152,22 +189,14 @@ const Container = styled.div`
       position: relative;
       height: 140px;
 
-      img {
+      img,
+      video,
+      iframe {
         width: 100%;
         height: 140px;
         object-fit: cover;
         border-radius: 0.3rem;
         top: 0;
-        z-index: 4;
-        position: absolute;
-      }
-      video {
-        width: 100%;
-        height: 140px;
-        object-fit: cover;
-        border-radius: 0.3rem;
-        top: 0;
-        z-index: 5;
         position: absolute;
       }
     }
@@ -205,4 +234,3 @@ const Container = styled.div`
     }
   }
 `;
-
