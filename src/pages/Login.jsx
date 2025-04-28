@@ -82,6 +82,17 @@ const Container = styled.div`
             padding: 0.5rem 1rem;
             width: 15rem;
           }
+
+          @media (max-width: 768px) {
+  /* Mobile styles */
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Tablet styles */
+}
+
+
+
           button {
             padding: 0.5rem 1rem;
             background-color: #e50914;

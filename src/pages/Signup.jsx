@@ -127,6 +127,18 @@ const Container = styled.div`
           padding: 0 25rem;
         }
       }
+
+      @media (max-width: 768px) {
+  /* Mobile styles */
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Tablet styles */
+}
+
+
+
+
       .form {
         display: grid;
         grid-template-columns: ${({ showPassword }) =>
