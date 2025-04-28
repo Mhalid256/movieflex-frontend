@@ -5,9 +5,12 @@ import styled from "styled-components";
 import logo from "../assets/logo.png";
 import { firebaseAuth } from "../utils/firebase-config";
 import { FaPowerOff, FaSearch } from "react-icons/fa";
+
 export default function Navbar({ isScrolled }) {
   const [showSearch, setShowSearch] = useState(false);
   const [inputHover, setInputHover] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const links = [
     { name: "Home", link: "/" },
     { name: "TV Shows", link: "/tv" },
@@ -22,16 +25,23 @@ export default function Navbar({ isScrolled }) {
           <div className="brand flex a-center j-center">
             <img src={logo} alt="Logo" />
           </div>
-          <ul className="links flex">
-            {links.map(({ name, link }) => {
-              return (
-                <li key={name}>
-                  <Link to={link}>{name}</Link>
-                </li>
-              );
-            })}
+
+          {/* Hamburger / Close Icon */}
+          <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? "✖" : "☰"}
+          </div>
+
+          <ul className={`links flex ${menuOpen ? "mobile-open" : ""}`}>
+            {links.map(({ name, link }) => (
+              <li key={name}>
+                <Link to={link} onClick={() => setMenuOpen(false)}>
+                  {name}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
+
         <div className="right flex a-center">
           <div className={`search ${showSearch ? "show-search" : ""}`}>
             <button
@@ -64,6 +74,7 @@ export default function Navbar({ isScrolled }) {
   );
 }
 
+// Styled Component
 const Container = styled.div`
   .scrolled {
     background-color: black;
@@ -80,6 +91,8 @@ const Container = styled.div`
     padding: 0 4rem;
     align-items: center;
     transition: 0.3s ease-in-out;
+    background-color: transparent;
+
     .left {
       gap: 2rem;
       .brand {
@@ -87,9 +100,16 @@ const Container = styled.div`
           height: 4rem;
         }
       }
+      .hamburger {
+        display: none;
+        font-size: 2.5rem;
+        cursor: pointer;
+        color: white;
+      }
       .links {
         list-style-type: none;
         gap: 2rem;
+        display: flex;
         li {
           a {
             color: white;
@@ -98,6 +118,7 @@ const Container = styled.div`
         }
       }
     }
+
     .right {
       gap: 1rem;
       button {
@@ -151,6 +172,35 @@ const Container = styled.div`
           opacity: 1;
           visibility: visible;
           padding: 0.3rem;
+        }
+      }
+    }
+  }
+
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    nav {
+      padding: 0 1rem;
+      .left {
+        .hamburger {
+          display: block;
+        }
+        .links {
+          display: none;
+          position: absolute;
+          top: 6.5rem;
+          left: 0;
+          width: 100%;
+          background: black;
+          flex-direction: column;
+          text-align: center;
+          li {
+            padding: 1rem 0;
+            border-bottom: 1px solid #333;
+          }
+        }
+        .links.mobile-open {
+          display: flex;
         }
       }
     }
