@@ -30,6 +30,8 @@ export default function App() {
         <Route exact path="/" element={<Netflix />} />
         <Route exact path="/movie" element={<MovieTrailer />} />
         <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+        <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+
 
       </Routes>
     </BrowserRouter>
