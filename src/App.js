@@ -5,7 +5,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 
 
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+
 import Login from "./pages/Login";
 import MoviePage from "./pages/Movies";
 import Netflix from "./pages/Netflix";
@@ -15,10 +15,12 @@ import TVShows from "./pages/TVShows";
 import UserListedMovies from "./pages/UserListedMovies";
 import MovieTrailer from "./pages/MovieTrailer";
 import Checkout from "./pages/Checkout"; // your checkout page
+import PaymentConfirmation from "./pages/PaymentConfirmation";
+
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <Router> {/* ✅ use the alias */}
       <Routes>
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/signup" element={<Signup />} />
@@ -31,9 +33,7 @@ export default function App() {
         <Route exact path="/movie" element={<MovieTrailer />} />
         <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
         <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
-
-
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
