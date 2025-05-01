@@ -50,7 +50,7 @@ function MovieTrailer() {
 
   const handleSubscribe = async () => {
     try {
-      const response = await fetch("https://movieflex-backend-6.onrender.com/api/payments/subscribe", {
+      const response = await fetch("https://movieflex-backend-1.onrender.com/api/payments/subscribe", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
