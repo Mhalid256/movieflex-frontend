@@ -4,7 +4,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 
 
 
-import React from "react";
+import React, { lazy, Suspense } from "react";
 
 import Login from "./pages/Login";
 import MoviePage from "./pages/Movies";
@@ -19,7 +19,7 @@ import PaymentConfirmation from "./pages/PaymentConfirmation";
 
 
 // Update App.js with lazy loading
-import React, { lazy, Suspense } from "react";
+
 
 const Login = lazy(() => import("./pages/Login"));
 const Netflix = lazy(() => import("./pages/Netflix"));
