@@ -60,4 +60,21 @@ const SubscriptionPage = () => {
   );
 };
 
+try {
+  const res = await axios.post("/api/payments/subscribe", { 
+    email: userEmail, // Add user email
+    phone: phoneNumber,
+    firstName: firstName,
+    lastName: lastName
+  });
+  if (res.data && res.data.redirect_url) {
+    window.location.href = res.data.redirect_url;
+  } else {
+    alert("Payment initialization failed. Please try again.");
+  }
+} catch (error) {
+  console.error("Payment error:", error);
+  alert("Payment service unavailable. Please try again later.");
+}
+
 export default SubscriptionPage;
