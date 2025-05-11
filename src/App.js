@@ -1,60 +1,43 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import React, { lazy, Suspense } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
-
-
-import React, { lazy, Suspense } from "react";
-
-import Login from "./pages/Login";
-import MoviePage from "./pages/Movies";
-import Netflix from "./pages/Netflix";
-import Player from "./pages/Player";
-import Signup from "./pages/Signup";
-import TVShows from "./pages/TVShows";
-import UserListedMovies from "./pages/UserListedMovies";
-import MovieTrailer from "./pages/MovieTrailer";
-import Checkout from "./pages/Checkout"; // your checkout page
-import PaymentConfirmation from "./pages/PaymentConfirmation";
-
-
-// Update App.js with lazy loading
-
-
+// Lazy load components
 const Login = lazy(() => import("./pages/Login"));
+const Signup = lazy(() => import("./pages/Signup"));
+const Player = lazy(() => import("./pages/Player"));
+const TVShows = lazy(() => import("./pages/TVShows"));
+const MoviePage = lazy(() => import("./pages/Movies"));
+const UserListedMovies = lazy(() => import("./pages/UserListedMovies"));
 const Netflix = lazy(() => import("./pages/Netflix"));
-// ... other imports
+const MovieTrailer = lazy(() => import("./pages/MovieTrailer"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const PaymentConfirmation = lazy(() => import("./pages/PaymentConfirmation"));
 
 export default function App() {
   return (
-    <Router>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Routes>
-          <Route exact path="/login" element={<Login />} />
-          {/* Other routes */}
-        </Routes>
-      </Suspense>
-    </Router>
-  );
-}
-
-
-export default function App() {
-  return (
-    <Router> {/* ✅ use the alias */}
-      <Routes>
-        <Route exact path="/login" element={<Login />} />
-        <Route exact path="/signup" element={<Signup />} />
-        <Route exact path="/player" element={<Player />} />
-        <Route exact path="/tv" element={<TVShows />} />
-        <Route exact path="/movies" element={<MoviePage />} />
-        <Route exact path="/new" element={<Player />} />
-        <Route exact path="/mylist" element={<UserListedMovies />} />
-        <Route exact path="/" element={<Netflix />} />
-        <Route exact path="/movie" element={<MovieTrailer />} />
-        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-        <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/player" element={<Player />} />
+            <Route path="/tv" element={<TVShows />} />
+            <Route path="/movies" element={<MoviePage />} />
+            <Route path="/new" element={<Player />} />
+            <Route path="/mylist" element={<UserListedMovies />} />
+            <Route path="/" element={<Netflix />} />
+            <Route path="/movie" element={<MovieTrailer />} />
+            <Route
+              path="/checkout"
+              element={<ProtectedRoute><Checkout /></ProtectedRoute>}
+            />
+            <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+          </Routes>
+        </Suspense>
+      </Router>
+    </AuthProvider>
   );
 }
