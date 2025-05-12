@@ -1,11 +1,10 @@
-// MovieTrailer.jsx
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import backgroundImage from "../assets/home.jpg";
 import MovieLogo from "../assets/homeTitle.webp";
 import { FaPlay } from "react-icons/fa";
-import { AiOutlineInfoCircle } from "react-icons/ai";
+import { AiOutlineInfoCircle, AiOutlineClose } from "react-icons/ai";
 import { fetchGenres, fetchMoviesByGenre, fetchMovieTrailer } from "../utils/tmdbApi";
 import { useNavigate } from "react-router-dom";
 
@@ -88,14 +87,14 @@ function MovieTrailer() {
           <div className="logo">
             <img src={MovieLogo} alt="Movie Logo" />
           </div>
-          <div className="buttons">
-            <button className="action-btn">
+          <div className="buttons flex">
+            <button className="play-trailer" onClick={() => alert("Please click a movie below to play trailer")}>
               <FaPlay />
-              <span>Play</span>
+              Play Trailer
             </button>
             <button className="subscribe-btn" onClick={handleSubscribe}>
               <AiOutlineInfoCircle />
-              <span>Subscribe</span>
+              Subscribe
             </button>
           </div>
         </div>
@@ -118,10 +117,13 @@ function MovieTrailer() {
       ))}
 
       {showTrailer && trailerUrl && (
-        <div className="trailer-modal" onClick={closeTrailer}>
-          <div className="trailer-content" onClick={(e) => e.stopPropagation()}>
+        <div className="trailer-modal">
+          <div className="close-btn" onClick={closeTrailer}>
+            <AiOutlineClose />
+          </div>
+          <div className="trailer-content">
             <iframe
-              src={`https://www.youtube.com/embed/${trailerUrl}?autoplay=1`}
+              src={`https://www.youtube.com/embed/${trailerUrl}`}
               title="Movie Trailer"
               width="100%"
               height="100%"
@@ -171,20 +173,28 @@ const Container = styled.div`
           gap: 0.5rem;
           padding: 0.7rem 1.5rem;
           border: none;
-          background-color: #e50914;
           color: white;
           cursor: pointer;
           border-radius: 5px;
           font-size: 1rem;
+        }
 
-          &:nth-of-type(2) {
-            background-color: rgba(109, 109, 110, 0.7);
+        .play-trailer {
+          background-color: #e50914;
+          &:hover {
+            background-color: #b20710;
+          }
+        }
+
+        .subscribe-btn {
+          background-color: rgba(109, 109, 110, 0.7);
+          &:hover {
+            background-color: rgba(109, 109, 110, 0.9);
           }
         }
 
         @media (max-width: 768px) {
           flex-direction: column;
-          width: 100%;
           button {
             width: 100%;
             justify-content: center;
@@ -233,15 +243,24 @@ const Container = styled.div`
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.8);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 1000;
 
+    .close-btn {
+      align-self: flex-end;
+      margin: 1rem;
+      font-size: 2rem;
+      color: white;
+      cursor: pointer;
+    }
+
     .trailer-content {
       width: 90%;
-      height: 50%;
+      height: 60%;
       max-width: 800px;
-      max-height: 400px;
+      max-height: 500px;
 
       @media (max-width: 768px) {
         width: 95%;
