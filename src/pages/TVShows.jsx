@@ -1,99 +1,106 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
-import TVSlider from "../components/TVSlider";
+import CardSlider from "../components/CardSlider";
 import { onAuthStateChanged } from "firebase/auth";
 import { firebaseAuth } from "../utils/firebase-config";
 import { useNavigate } from "react-router-dom";
-import { fetchTVShows, fetchMovieTrailer } from "../utils/tmdbApi";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchGenres, fetchTVShows, fetchMovieTrailer } from "../utils/tmdbApi";
+import SelectGenre from "../components/SelectGenre";
+import Slider from "../components/Slider";
+
+// Fetch different TV Show categories
+const fetchTVShowCategories = async () => {
+  const popular = await fetchTVShows("popular");
+  const topRated = await fetchTVShows("top_rated");
+  const airingToday = await fetchTVShows("airing_today");
+  const onTheAir = await fetchTVShows("on_the_air");
+  return { popular, topRated, airingToday, onTheAir };
+};
 
 function TVShows() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [tvShows, setTVShows] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [videoUrl, setVideoUrl] = useState("");
+  const [tvShows, setTvShows] = useState({});
+  const genres = useSelector((state) => state.netflix.genres);
+  const genresLoaded = useSelector((state) => state.netflix.genresLoaded);
+  const dataLoading = useSelector((state) => state.netflix.dataLoading);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    fetchTVShows().then((data) => setTVShows(data));
+    if (!genres.length) dispatch(getGenres());
   }, []);
 
   useEffect(() => {
-    onAuthStateChanged(firebaseAuth, (currentUser) => {
-      if (!currentUser) navigate("/login");
-    });
-  }, []);
+    if (genresLoaded) {
+      dispatch(fetchMovies({ genres, type: "tv" }));
+      fetchTVShowCategories().then(setTvShows);
+    }
+  }, [genresLoaded]);
+
+  const [user, setUser] = useState(undefined);
+
+  onAuthStateChanged(firebaseAuth, (currentUser) => {
+    if (currentUser) setUser(currentUser.uid);
+    else navigate("/login");
+  });
 
   window.onscroll = () => {
     setIsScrolled(window.pageYOffset === 0 ? false : true);
     return () => (window.onscroll = null);
   };
 
-  const handleTrailerClick = async (tvId) => {
-    const trailerKey = await fetchMovieTrailer(tvId, "tv");
-    if (trailerKey) {
-      setVideoUrl(`https://www.youtube.com/embed/${trailerKey}?autoplay=1`);
-      setShowModal(true);
-    }
-  };
-
   return (
     <Container>
       <Navbar isScrolled={isScrolled} />
-      <div className="tv-section">
-        <h1>Popular TV Shows</h1>
-        <TVSlider tvShows={tvShows} onTrailerClick={handleTrailerClick} />
+      <div className="data">
+        <SelectGenre genres={genres} type="tv" />
+        {Object.keys(tvShows).length ? (
+          <>
+            {/* Scrollable TV Show Categories */}
+            {Object.entries(tvShows).map(([category, shows]) => (
+              <div key={category} className="tv-show-category">
+                <h2>{category.replace(/([A-Z])/g, " $1").toUpperCase()}</h2>
+                <CardSlider
+                  shows={shows}
+                  onTrailerClick={() => {}}
+                  onFullMovieClick={() => {}}
+                  buttonLabel="Watch Today's Episode"
+                />
+              </div>
+            ))}
+          </>
+        ) : (
+          <h1 className="not-available">
+            No TV Shows available for the selected genre. Please select a
+            different genre.
+          </h1>
+        )}
       </div>
-
-      {showModal && videoUrl && (
-        <div className="hover-preview">
-          <button className="close-btn" onClick={() => setShowModal(false)}>×</button>
-          <iframe
-            src={videoUrl}
-            title="Trailer"
-            width="320"
-            height="180"
-            allow="autoplay; encrypted-media"
-            allowFullScreen
-          />
-        </div>
-      )}
     </Container>
   );
 }
 
 const Container = styled.div`
-  background-color: #141414;
-  color: white;
-  padding-top: 5rem;
-  .tv-section {
-    padding: 2rem;
-    h1 {
+  .data {
+    margin-top: 8rem;
+
+    .tv-show-category {
+      margin-bottom: 3rem;
+    }
+
+    .tv-show-category h2 {
+      color: white;
       font-size: 2rem;
       margin-bottom: 1rem;
     }
-  }
 
-  .hover-preview {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 999;
-    background-color: rgba(0, 0, 0, 0.95);
-    padding: 1rem;
-    border-radius: 10px;
-  }
-
-  .close-btn {
-    position: absolute;
-    top: -20px;
-    right: -20px;
-    font-size: 2rem;
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
+    .not-available {
+      text-align: center;
+      margin-top: 4rem;
+    }
   }
 `;
 
