@@ -3,30 +3,42 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const SubscriptionPage = () => {
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+  });
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
-    if (!phoneNumber) {
-      alert("Please enter your phone number.");
+
+    const { firstName, lastName, email, phone } = form;
+
+    if (!firstName || !lastName || !email || !phone) {
+      alert("Please fill in all the fields.");
       return;
     }
+
     setLoading(true);
 
     try {
-      const res = await axios.post("/api/payments/subscribe", { phoneNumber });
-      if (res.data.success) {
-        alert("Payment initiated! Please approve the transaction on your phone.");
-        // Optionally wait for confirmation or just redirect
-        navigate("/home");
+      const res = await axios.post("/api/payments/subscribe", form);
+      const redirectUrl = res.data;
+
+      if (redirectUrl) {
+        window.location.href = redirectUrl; // Redirect to PesaPal
       } else {
-        alert("Payment failed: " + res.data.message);
+        alert("Failed to get payment link. Please try again.");
       }
     } catch (error) {
-      console.error(error);
-      alert("An error occurred while processing your payment.");
+      console.error("Payment Error:", error);
+      alert("An error occurred while initiating payment.");
     } finally {
       setLoading(false);
     }
@@ -34,19 +46,22 @@ const SubscriptionPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-      <form className="bg-gray-800 p-8 rounded-lg shadow-lg" onSubmit={handleSubscribe}>
+      <form className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md" onSubmit={handleSubscribe}>
         <h2 className="text-2xl font-bold mb-6 text-center">Subscribe Now</h2>
 
-        <div className="mb-4">
-          <label className="block mb-2">Phone Number</label>
-          <input
-            type="tel"
-            placeholder="e.g. 25677xxxxxxx"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            className="w-full p-2 rounded text-black"
-          />
-        </div>
+        {["firstName", "lastName", "email", "phone"].map((field) => (
+          <div className="mb-4" key={field}>
+            <label className="block mb-1 capitalize">{field.replace(/([A-Z])/g, ' $1')}</label>
+            <input
+              type={field === "email" ? "email" : "text"}
+              name={field}
+              placeholder={field === "phone" ? "e.g. 25677xxxxxxx" : ""}
+              value={form[field]}
+              onChange={handleChange}
+              className="w-full p-2 rounded text-black"
+            />
+          </div>
+        ))}
 
         <button
           type="submit"
@@ -59,22 +74,5 @@ const SubscriptionPage = () => {
     </div>
   );
 };
-
-try {
-  const res = await axios.post("/api/payments/subscribe", { 
-    email: userEmail, // Add user email
-    phone: phoneNumber,
-    firstName: firstName,
-    lastName: lastName
-  });
-  if (res.data && res.data.redirect_url) {
-    window.location.href = res.data.redirect_url;
-  } else {
-    alert("Payment initialization failed. Please try again.");
-  }
-} catch (error) {
-  console.error("Payment error:", error);
-  alert("Payment service unavailable. Please try again later.");
-}
 
 export default SubscriptionPage;
