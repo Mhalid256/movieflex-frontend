@@ -27,13 +27,13 @@ function Movies() {
 
   useEffect(() => {
     dispatch(getGenres());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (genresLoaded) {
       dispatch(fetchMovies({ genres, type: "movie" }));
     }
-  }, [genresLoaded]);
+  }, [genresLoaded, dispatch, genres]);
 
   const [user, setUser] = useState(undefined);
   onAuthStateChanged(firebaseAuth, (currentUser) => {
@@ -93,8 +93,8 @@ function Movies() {
           <iframe
             src={videoUrl}
             title="Video"
-            width={modalType === "full" ? "80%" : "320"}
-            height={modalType === "full" ? "80%" : "180"}
+            width={modalType === "full" ? "80%" : "560"}
+            height={modalType === "full" ? "80%" : "315"}
             style={{ border: 0, borderRadius: "10px" }}
             allow="autoplay; encrypted-media"
             allowFullScreen
@@ -118,7 +118,7 @@ const Container = styled.div`
   .hover-preview {
     position: fixed;
     z-index: 1000;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.95);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -126,8 +126,8 @@ const Container = styled.div`
     left: 50%;
     transform: translate(-50%, -50%);
     &.trailer {
-      width: 320px;
-      height: 180px;
+      width: 560px;
+      height: 315px;
     }
     &.full {
       width: 80vw;
