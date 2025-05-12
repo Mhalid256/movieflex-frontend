@@ -1,3 +1,4 @@
+// MovieTrailer.jsx
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
@@ -87,14 +88,14 @@ function MovieTrailer() {
           <div className="logo">
             <img src={MovieLogo} alt="Movie Logo" />
           </div>
-          <div className="buttons flex">
-            <button className="flex j-center a-center">
+          <div className="buttons">
+            <button className="action-btn">
               <FaPlay />
-              Play
+              <span>Play</span>
             </button>
-            <button className="flex j-center a-center" onClick={handleSubscribe}>
+            <button className="subscribe-btn" onClick={handleSubscribe}>
               <AiOutlineInfoCircle />
-              Subscribe
+              <span>Subscribe</span>
             </button>
           </div>
         </div>
@@ -118,9 +119,9 @@ function MovieTrailer() {
 
       {showTrailer && trailerUrl && (
         <div className="trailer-modal" onClick={closeTrailer}>
-          <div className="trailer-content">
+          <div className="trailer-content" onClick={(e) => e.stopPropagation()}>
             <iframe
-              src={`https://www.youtube.com/embed/${trailerUrl}`}
+              src={`https://www.youtube.com/embed/${trailerUrl}?autoplay=1`}
               title="Movie Trailer"
               width="100%"
               height="100%"
@@ -141,6 +142,7 @@ const Container = styled.div`
 
   .hero {
     position: relative;
+
     .background-image {
       filter: brightness(60%);
       width: 100vw;
@@ -173,9 +175,19 @@ const Container = styled.div`
           color: white;
           cursor: pointer;
           border-radius: 5px;
+          font-size: 1rem;
 
           &:nth-of-type(2) {
             background-color: rgba(109, 109, 110, 0.7);
+          }
+        }
+
+        @media (max-width: 768px) {
+          flex-direction: column;
+          width: 100%;
+          button {
+            width: 100%;
+            justify-content: center;
           }
         }
       }
@@ -187,21 +199,27 @@ const Container = styled.div`
 
     h2 {
       margin-bottom: 1rem;
+      font-size: 1.2rem;
     }
 
     .slider {
       display: flex;
       gap: 1rem;
-      overflow-x: scroll;
+      overflow-x: auto;
       padding-bottom: 1rem;
+      scroll-behavior: smooth;
 
       .movie {
-        min-width: 200px;
+        min-width: 150px;
         cursor: pointer;
 
         img {
           width: 100%;
           border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+          min-width: 120px;
         }
       }
     }
@@ -220,10 +238,33 @@ const Container = styled.div`
     z-index: 1000;
 
     .trailer-content {
-      width: 80%;
-      height: 80%;
-      max-width: 900px;
-      max-height: 600px;
+      width: 90%;
+      height: 50%;
+      max-width: 800px;
+      max-height: 400px;
+
+      @media (max-width: 768px) {
+        width: 95%;
+        height: 50%;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero .container {
+      bottom: 3rem;
+
+      .logo img {
+        max-width: 250px;
+      }
+    }
+
+    .category {
+      margin: 1rem 3vw;
+
+      h2 {
+        font-size: 1rem;
+      }
     }
   }
 `;
