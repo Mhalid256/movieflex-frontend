@@ -1,3 +1,4 @@
+// [Your imports remain unchanged]
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
@@ -112,6 +113,7 @@ function Netflix() {
 
       {showModal && videoUrl && (
         <div className={`hover-preview ${modalType === "full" ? "full" : "trailer"}`}>
+          <button className="close-button" onClick={closeModal}>×</button>
           <iframe
             src={videoUrl}
             title="Video Preview"
@@ -255,6 +257,18 @@ const Container = styled.div`
     &.full {
       width: 80vw;
       height: 80vh;
+    }
+
+    .close-button {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: transparent;
+      color: white;
+      font-size: 2rem;
+      border: none;
+      cursor: pointer;
+      z-index: 1001;
     }
   }
 `;
