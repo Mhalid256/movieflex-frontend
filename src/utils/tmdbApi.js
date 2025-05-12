@@ -1,32 +1,36 @@
-// utils/tmdbApi.js
 import axios from "axios";
 
-// Get the API key and Base URL from environment variables
-const API_KEY = process.env.REACT_APP_TMDB_API_KEY; // Use the API key from environment variables
-const BASE_URL = process.env.REACT_APP_BASE_URL || "https://api.themoviedb.org/3"; // Default to the TMDB base URL if not set
+// Use your actual TMDB API key or from .env
+const TMDB_API_KEY = "7f602bb21d9a23e77e110e48883aebf3";
+const BASE_URL = "https://api.themoviedb.org/3";
 
-// Fetch movie genres
+// Fetch genres
 export const fetchGenres = async () => {
-  const res = await axios.get(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}`);
+  const res = await axios.get(`${BASE_URL}/genre/movie/list?api_key=${TMDB_API_KEY}`);
   return res.data.genres;
 };
 
 // Fetch movies by genre
 export const fetchMoviesByGenre = async (genreId) => {
-  const res = await axios.get(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`);
+  const res = await axios.get(`${BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}`);
   return res.data.results;
 };
 
-// Fetch Now Playing movies
+// Fetch now playing movies
 export const fetchNowPlayingMovies = async () => {
-  const res = await axios.get(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}`);
+  const res = await axios.get(`${BASE_URL}/movie/now_playing?api_key=${TMDB_API_KEY}`);
   return res.data.results;
 };
 
-// Fetch movie trailer by movie ID
-export const fetchMovieTrailer = async (movieId) => {
-  const res = await axios.get(`${BASE_URL}/movie/${movieId}/videos?api_key=${API_KEY}`);
-  // Check if there's a trailer and return the first video key (YouTube trailer)
+// ✅ Fetch trailer by ID (works for both "movie" and "tv")
+export const fetchMovieTrailer = async (id, type = "movie") => {
+  const res = await axios.get(`${BASE_URL}/${type}/${id}/videos?api_key=${TMDB_API_KEY}`);
   const trailer = res.data.results.find(video => video.type === "Trailer" && video.site === "YouTube");
-  return trailer ? trailer.key : null; // If no trailer is found, return null
+  return trailer ? trailer.key : null;
+};
+
+// Fetch popular TV shows
+export const fetchTVShows = async () => {
+  const res = await axios.get(`${BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
+  return res.data.results;
 };
