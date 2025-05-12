@@ -85,17 +85,25 @@ function Netflix() {
           <h2>{genre.name}</h2>
           <div className="slider">
             {movies.map((movie) => (
-              <div
-                className="movie"
-                key={movie.id}
-                onMouseEnter={() => handleMovieHover(movie.id)}
-                onMouseLeave={() => closeModal()}
-                onClick={() => handleMovieClick(movie.id)}
-              >
+              <div className="movie" key={movie.id}>
                 <img
                   src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
                   alt={movie.title}
                 />
+                <div className="hover-buttons">
+                  <button
+                    className="trailer-button"
+                    onClick={() => handleMovieHover(movie.id)}
+                  >
+                    Watch Trailer
+                  </button>
+                  <button
+                    className="full-button"
+                    onClick={() => handleMovieClick(movie.id)}
+                  >
+                    Watch Full Movie
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -171,28 +179,64 @@ const Container = styled.div`
       gap: 1rem;
       overflow-x: scroll;
       padding-bottom: 1rem;
+
       .movie {
+        position: relative;
         min-width: 200px;
         cursor: pointer;
+
         img {
           width: 100%;
           border-radius: 5px;
+          display: block;
+        }
+
+        .hover-buttons {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: none;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          gap: 0.5rem;
+          background-color: rgba(0, 0, 0, 0.6);
+          border-radius: 5px;
+
+          button {
+            padding: 0.5rem 1rem;
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+          }
+
+          .trailer-button {
+            background-color: red;
+          }
+
+          .full-button {
+            background-color: black;
+          }
+        }
+
+        &:hover .hover-buttons {
+          display: flex;
         }
       }
     }
   }
 
-
-
   @media (max-width: 768px) {
-  /* Mobile styles */
-}
+    /* Mobile styles */
+  }
 
-@media (min-width: 768px) and (max-width: 1024px) {
-  /* Tablet styles */
-}
-
-
+  @media (min-width: 768px) and (max-width: 1024px) {
+    /* Tablet styles */
+  }
 
   .hover-preview {
     position: fixed;
