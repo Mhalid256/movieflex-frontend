@@ -5,12 +5,9 @@ import CardSlider from "../components/CardSlider";
 import { onAuthStateChanged } from "firebase/auth";
 import { firebaseAuth } from "../utils/firebase-config";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchGenres, fetchTVShows, fetchMovieTrailer } from "../utils/tmdbApi";
-import SelectGenre from "../components/SelectGenre";
-import Slider from "../components/Slider";
+import { fetchTVShows } from "../utils/tmdbApi"; // Assuming tmdbApi fetches TV shows
 
-// Fetch different TV Show categories
+// Fetch different TV Show categories from TMDB
 const fetchTVShowCategories = async () => {
   const popular = await fetchTVShows("popular");
   const topRated = await fetchTVShows("top_rated");
@@ -22,23 +19,7 @@ const fetchTVShowCategories = async () => {
 function TVShows() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [tvShows, setTvShows] = useState({});
-  const genres = useSelector((state) => state.netflix.genres);
-  const genresLoaded = useSelector((state) => state.netflix.genresLoaded);
-  const dataLoading = useSelector((state) => state.netflix.dataLoading);
-
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (!genres.length) dispatch(getGenres());
-  }, []);
-
-  useEffect(() => {
-    if (genresLoaded) {
-      dispatch(fetchMovies({ genres, type: "tv" }));
-      fetchTVShowCategories().then(setTvShows);
-    }
-  }, [genresLoaded]);
 
   const [user, setUser] = useState(undefined);
 
@@ -46,6 +27,10 @@ function TVShows() {
     if (currentUser) setUser(currentUser.uid);
     else navigate("/login");
   });
+
+  useEffect(() => {
+    fetchTVShowCategories().then(setTvShows);
+  }, []);
 
   window.onscroll = () => {
     setIsScrolled(window.pageYOffset === 0 ? false : true);
@@ -56,7 +41,6 @@ function TVShows() {
     <Container>
       <Navbar isScrolled={isScrolled} />
       <div className="data">
-        <SelectGenre genres={genres} type="tv" />
         {Object.keys(tvShows).length ? (
           <>
             {/* Scrollable TV Show Categories */}
@@ -74,8 +58,7 @@ function TVShows() {
           </>
         ) : (
           <h1 className="not-available">
-            No TV Shows available for the selected genre. Please select a
-            different genre.
+            No TV Shows available. Please try again later.
           </h1>
         )}
       </div>
