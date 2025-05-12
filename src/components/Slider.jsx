@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 
-function Slider({ movies, onTrailerClick, onFullMovieClick }) {
+function Slider({ title = "Trending Now", movies, onTrailerClick, onFullMovieClick }) {
   return (
     <Container>
-      <h1>Trending Now</h1>
+      <h1>{title}</h1>
       <div className="movies">
         {movies.map((movie) => (
           <div className="movie-card" key={movie.id}>
@@ -15,8 +15,8 @@ function Slider({ movies, onTrailerClick, onFullMovieClick }) {
             <div className="overlay">
               <div className="title">{movie.name}</div>
               <div className="buttons">
-                <button onClick={() => onTrailerClick(movie.id)}>Watch Trailer</button>
-                <button onClick={() => onFullMovieClick(movie.id)}>Watch Full Movie</button>
+                <button onClick={() => onTrailerClick(movie)}>Watch Trailer</button>
+                <button onClick={() => onFullMovieClick(movie)}>Watch Today's Episode</button>
               </div>
             </div>
           </div>
@@ -49,7 +49,8 @@ const Container = styled.div`
 
     img {
       width: 100%;
-      height: auto;
+      height: 270px;
+      object-fit: cover;
       border-radius: 10px;
       display: block;
     }

@@ -1,151 +1,71 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import Navbar from "../components/Navbar";
-import SelectGenre from "../components/SelectGenre";
+import axios from "axios";
 import Slider from "../components/Slider";
-import NotAvailable from "../components/NotAvailable";
-import { onAuthStateChanged } from "firebase/auth";
-import { firebaseAuth } from "../utils/firebase-config";
-import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchMovies, getGenres } from "../store";
-import { fetchMovieTrailer } from "../utils/tmdbApi";
-import { getBunnyVideoUrl } from "../data/bunnyMovies";
+import Modal from "react-modal";
 
 function Movies() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [videoUrl, setVideoUrl] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState("trailer");
+  const [movies, setMovies] = useState([]);
+  const [trailerId, setTrailerId] = useState(null);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
 
-  const movies = useSelector((state) => state.netflix.movies);
-  const genres = useSelector((state) => state.netflix.genres);
-  const genresLoaded = useSelector((state) => state.netflix.genresLoaded);
+  const fetchMovies = async () => {
+    try {
+      const response = await axios.get("/api/movies"); // adjust your API route
+      setMovies(response.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const fetchTrailer = async (movie) => {
+    try {
+      const res = await axios.get(`/api/movies/${movie.id}/trailer`);
+      setTrailerId(res.data.youtubeTrailerId); // update this line if your structure differs
+      setModalIsOpen(true);
+    } catch (err) {
+      console.error("Failed to fetch trailer", err);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setModalIsOpen(false);
+    setTrailerId(null); // reset to remove iframe
+  };
+
+  const handleWatchFullMovie = (movie) => {
+    // Navigate or play full movie logic
+    window.location.href = `/watch/${movie.id}`;
+  };
 
   useEffect(() => {
-    dispatch(getGenres());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (genresLoaded) {
-      dispatch(fetchMovies({ genres, type: "movie" }));
-    }
-  }, [genresLoaded, dispatch, genres]);
-
-  const [user, setUser] = useState(undefined);
-  onAuthStateChanged(firebaseAuth, (currentUser) => {
-    if (currentUser) setUser(currentUser.uid);
-    else navigate("/login");
-  });
-
-  window.onscroll = () => {
-    setIsScrolled(window.pageYOffset === 0 ? false : true);
-    return () => (window.onscroll = null);
-  };
-
-  const handleTrailerClick = async (movieId) => {
-    const trailerKey = await fetchMovieTrailer(movieId);
-    if (trailerKey) {
-      setVideoUrl(`https://www.youtube.com/embed/${trailerKey}?autoplay=1`);
-      setModalType("trailer");
-      setShowModal(true);
-    }
-  };
-
-  const handleFullMovieClick = (movieId) => {
-    const bunnyUrl = getBunnyVideoUrl(movieId);
-    if (bunnyUrl) {
-      setVideoUrl(bunnyUrl);
-      setModalType("full");
-      setShowModal(true);
-    }
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setVideoUrl("");
-  };
+    fetchMovies();
+  }, []);
 
   return (
-    <Container>
-      <div className="navbar">
-        <Navbar isScrolled={isScrolled} />
-      </div>
-      <div className="data">
-        <SelectGenre genres={genres} type="movie" />
-        {movies.length ? (
-          <Slider
-            movies={movies}
-            onTrailerClick={handleTrailerClick}
-            onFullMovieClick={handleFullMovieClick}
-          />
-        ) : (
-          <NotAvailable />
-        )}
-      </div>
+    <div>
+      <Slider
+        title="Trending Now"
+        movies={movies}
+        onTrailerClick={fetchTrailer}
+        onFullMovieClick={handleWatchFullMovie}
+      />
 
-      {showModal && videoUrl && (
-        <div className={`hover-preview ${modalType}`}>
-          <button className="close-btn" onClick={closeModal}>×</button>
+      <Modal isOpen={modalIsOpen} onRequestClose={handleCloseModal} contentLabel="Trailer Modal">
+        <button onClick={handleCloseModal}>Close</button>
+        {trailerId && (
           <iframe
-            src={videoUrl}
-            title="Video"
-            width={modalType === "full" ? "80%" : "560"}
-            height={modalType === "full" ? "80%" : "315"}
-            style={{ border: 0, borderRadius: "10px" }}
+            width="100%"
+            height="400px"
+            src={`https://www.youtube.com/embed/${trailerId}?autoplay=1`}
+            title="YouTube trailer"
+            frameBorder="0"
             allow="autoplay; encrypted-media"
             allowFullScreen
           />
-        </div>
-      )}
-    </Container>
+        )}
+      </Modal>
+    </div>
   );
 }
-
-const Container = styled.div`
-  .data {
-    margin-top: 8rem;
-    .not-available {
-      text-align: center;
-      color: white;
-      margin-top: 4rem;
-    }
-  }
-
-  .hover-preview {
-    position: fixed;
-    z-index: 1000;
-    background: rgba(0, 0, 0, 0.95);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    &.trailer {
-      width: 560px;
-      height: 315px;
-    }
-    &.full {
-      width: 80vw;
-      height: 80vh;
-    }
-  }
-
-  .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 2rem;
-    background: none;
-    color: white;
-    border: none;
-    cursor: pointer;
-    z-index: 1001;
-  }
-`;
 
 export default Movies;
