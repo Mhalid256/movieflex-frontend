@@ -46,7 +46,7 @@ function Movies() {
     return () => (window.onscroll = null);
   };
 
-  const handleMovieHover = async (movieId) => {
+  const handleTrailerClick = async (movieId) => {
     const trailerKey = await fetchMovieTrailer(movieId);
     if (trailerKey) {
       setVideoUrl(`https://www.youtube.com/embed/${trailerKey}?autoplay=1`);
@@ -55,7 +55,7 @@ function Movies() {
     }
   };
 
-  const handleMovieClick = (movieId) => {
+  const handleFullMovieClick = (movieId) => {
     const bunnyUrl = getBunnyVideoUrl(movieId);
     if (bunnyUrl) {
       setVideoUrl(bunnyUrl);
@@ -79,9 +79,8 @@ function Movies() {
         {movies.length ? (
           <Slider
             movies={movies}
-            onHover={handleMovieHover}
-            onClick={handleMovieClick}
-            onLeave={closeModal}
+            onTrailerClick={handleTrailerClick}
+            onFullMovieClick={handleFullMovieClick}
           />
         ) : (
           <NotAvailable />
@@ -90,6 +89,7 @@ function Movies() {
 
       {showModal && videoUrl && (
         <div className={`hover-preview ${modalType}`}>
+          <button className="close-btn" onClick={closeModal}>×</button>
           <iframe
             src={videoUrl}
             title="Video"
@@ -133,6 +133,18 @@ const Container = styled.div`
       width: 80vw;
       height: 80vh;
     }
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 2rem;
+    background: none;
+    color: white;
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
   }
 `;
 
