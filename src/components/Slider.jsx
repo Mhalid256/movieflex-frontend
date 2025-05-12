@@ -1,24 +1,23 @@
 import React from "react";
 import styled from "styled-components";
 
-function Slider({ movies, onHover, onClick, onLeave }) {
+function Slider({ movies, onTrailerClick, onFullMovieClick }) {
   return (
     <Container>
-      <div className="movie-grid">
+      <h1>Trending Now</h1>
+      <div className="movies">
         {movies.map((movie) => (
-          <div
-            key={movie.id}
-            className="movie-card"
-            onMouseEnter={() => onHover(movie.id)}
-            onMouseLeave={onLeave}
-            onClick={() => onClick(movie.id)}
-          >
+          <div className="movie-card" key={movie.id}>
             <img
               src={`https://image.tmdb.org/t/p/w500${movie.image}`}
               alt={movie.name}
             />
-            <div className="info">
-              <h3>{movie.name}</h3>
+            <div className="overlay">
+              <div className="title">{movie.name}</div>
+              <div className="buttons">
+                <button onClick={() => onTrailerClick(movie.id)}>Watch Trailer</button>
+                <button onClick={() => onFullMovieClick(movie.id)}>Watch Full Movie</button>
+              </div>
             </div>
           </div>
         ))}
@@ -30,39 +29,82 @@ function Slider({ movies, onHover, onClick, onLeave }) {
 const Container = styled.div`
   padding: 2rem;
 
-  .movie-grid {
+  h1 {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .movies {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 1.5rem;
+    gap: 1rem;
   }
 
   .movie-card {
-    background-color: #111;
-    border-radius: 10px;
+    position: relative;
     overflow: hidden;
+    border-radius: 10px;
     cursor: pointer;
-    transition: transform 0.2s ease-in-out;
+    transition: transform 0.3s ease;
 
     img {
       width: 100%;
-      height: 270px; /* poster style (2:3) */
-      object-fit: cover;
-      border-radius: 5px 5px 0 0;
+      height: auto;
+      border-radius: 10px;
+      display: block;
     }
 
-    .info {
-      padding: 0.5rem;
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
       color: white;
+      opacity: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.3s ease;
+      padding: 1rem;
       text-align: center;
 
-      h3 {
-        font-size: 0.9rem;
-        margin: 0.5rem 0 0;
+      .title {
+        font-size: 1rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+      }
+
+      .buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        button {
+          background: #e50914;
+          color: white;
+          border: none;
+          padding: 0.5rem 1rem;
+          border-radius: 5px;
+          font-size: 0.9rem;
+          cursor: pointer;
+          transition: background 0.3s ease;
+
+          &:hover {
+            background: #f40612;
+          }
+        }
       }
     }
 
     &:hover {
-      transform: scale(1.03);
+      transform: scale(1.05);
+
+      .overlay {
+        opacity: 1;
+      }
     }
   }
 `;
