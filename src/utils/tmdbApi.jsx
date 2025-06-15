@@ -1,4 +1,5 @@
 // Mock API functions - replace with actual TMDB API calls
+
 export const fetchGenres = async () => {
   // Mock data - replace with actual API call
   return [
@@ -13,7 +14,7 @@ export const fetchGenres = async () => {
   ];
 };
 
-export const fetchMoviesByGenre = async (genreId: number) => {
+export const fetchMoviesByGenre = async (genreId) => {
   // Mock data - replace with actual API call
   return [
     {
@@ -36,7 +37,7 @@ export const fetchMoviesByGenre = async (genreId: number) => {
   ];
 };
 
-export const fetchMovieTrailer = async (movieId: number) => {
+export const fetchMovieTrailer = async (movieId) => {
   // Mock function - replace with actual API call
   return "dQw4w9WgXcQ"; // Sample YouTube video ID
 };

@@ -9,7 +9,7 @@ const Login = lazy(() => import("./pages/Login"));
 const Signup = lazy(() => import("./pages/Signup"));
 const Player = lazy(() => import("./pages/Player"));
 const TVShows = lazy(() => import("./pages/TVShows"));
-const MoviePage = lazy(() => import("./pages/Movies"));
+const MoviePage = lazy(() => import("./pages/Movie"));
 const UserListedMovies = lazy(() => import("./pages/UserListedMovies"));
 const Netflix = lazy(() => import("./pages/Netflix"));
 const MovieTrailer = lazy(() => import("./pages/MovieTrailer"));

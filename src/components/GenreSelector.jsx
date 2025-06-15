@@ -1,24 +1,8 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-interface Genre {
-  id: number;
-  name: string;
-}
-
-interface GenreSelectorProps {
-  genres: Genre[];
-  selectedGenre: number | null;
-  onGenreSelect: (genreId: number) => void;
-}
-
-const GenreSelector: React.FC<GenreSelectorProps> = ({
-  genres,
-  selectedGenre,
-  onGenreSelect,
-}) => {
+const GenreSelector = ({ genres, selectedGenre, onGenreSelect }) => {
   return (
     <div className="px-4 md:px-8 lg:px-12 xl:px-16 py-4 border-b border-border">
       <ScrollArea className="w-full whitespace-nowrap">

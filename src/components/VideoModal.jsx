@@ -1,37 +1,46 @@
-import React from "react";
-import styled from "styled-components";
+'use client';
 
-const VideoModal = ({ videoUrl, onClose }) => {
+import React from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
+
+const VideoModal = ({ videoUrl, modalType, onClose }) => {
+  const isOpen = Boolean(videoUrl);
+
   return (
-    <Overlay onClick={onClose}>
-      <PlayerWrapper onClick={(e) => e.stopPropagation()}>
-        <video controls autoPlay src={videoUrl} />
-      </PlayerWrapper>
-    </Overlay>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent
+        className={`p-0 border-0 bg-transparent ${
+          modalType === "full"
+            ? "max-w-[90vw] w-[90vw] h-[90vh]"
+            : "max-w-lg w-full aspect-video"
+        }`}
+      >
+        <div className="relative w-full h-full">
+          <Button
+            onClick={onClose}
+            variant="ghost"
+            size="icon"
+            className="absolute -top-10 right-0 z-50 text-white hover:text-gray-300 hover:bg-white/20"
+          >
+            <X className="h-6 w-6" />
+          </Button>
+
+          {videoUrl && (
+            <iframe
+              src={videoUrl}
+              title="Video Preview"
+              className="w-full h-full rounded-lg"
+              style={{ border: 0 }}
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            />
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
-
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-`;
-
-const PlayerWrapper = styled.div`
-  width: 80%;
-  max-width: 900px;
-
-  video {
-    width: 100%;
-    border-radius: 10px;
-  }
-`;
 
 export default VideoModal;

@@ -1,25 +1,9 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Eye } from "lucide-react";
 
-interface Movie {
-  id: number;
-  title: string;
-  poster_path: string;
-  overview: string;
-  release_date: string;
-  vote_average: number;
-}
-
-interface MovieCardProps {
-  movie: Movie;
-  onTrailerClick: () => void;
-  onFullMovieClick: () => void;
-}
-
-const MovieCard: React.FC<MovieCardProps> = ({ movie, onTrailerClick, onFullMovieClick }) => {
+const MovieCard = ({ movie, onTrailerClick, onFullMovieClick }) => {
   return (
     <Card className="group relative overflow-hidden bg-card border-border hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer">
       <CardContent className="p-0">
@@ -30,7 +14,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onTrailerClick, onFullMovi
             className="w-full h-full object-cover rounded-lg"
             loading="lazy"
           />
-          
+
           {/* Overlay with buttons - appears on hover */}
           <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center gap-3 p-4 rounded-lg">
             <Button
@@ -53,7 +37,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onTrailerClick, onFullMovi
             </Button>
           </div>
         </div>
-        
+
         {/* Movie info - visible on larger screens */}
         <div className="p-2 hidden md:block">
           <h3 className="text-sm font-medium text-foreground line-clamp-2 leading-tight">
