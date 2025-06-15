@@ -1,4 +1,9 @@
-export const getBunnyVideoUrl = (movieId) => {
-  // Mock function - replace with actual implementation
-  return "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-};
+export const getBunnyVideoUrl = (tmdbId) => {
+    const movieMap = {
+      603692: "https://your-bunny-cdn.net/videos/avengers.mp4",
+      567189: "https://your-bunny-cdn.net/videos/superman.mp4",
+      // Add more mappings...
+    };
+    return movieMap[tmdbId] || null;
+  };
+  

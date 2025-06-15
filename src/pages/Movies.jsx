@@ -4,7 +4,7 @@ import MovieCard from "../components/MovieCard";
 import GenreSelector from "../components/GenreSelector";
 import VideoModal from "../components/VideoModal";
 import { fetchGenres, fetchMoviesByGenre, fetchMovieTrailer } from "../utils/tmdbApi";
-import { getBunnyVideoUrl } from "../data/bunnyMovie";
+import { getBunnyVideoUrl } from "../data/bunnyMovies";
 
 function Movies() {
   const [isScrolled, setIsScrolled] = useState(false);
