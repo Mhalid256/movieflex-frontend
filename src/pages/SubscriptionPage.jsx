@@ -75,4 +75,4 @@ const SubscriptionPage = () => {
   );
 };
 
-export default SubscriptionPage;
+export default SubscriptionPage; //strongly hate your errors
