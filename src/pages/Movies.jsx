@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import { fetchGenres, fetchMoviesByGenre, fetchMovieTrailer } from "../utils/tmdbApi";
-import { getBunnyVideoUrl } from "../data/bunnyMovies";
+import { getBunnyVideoUrl } from "../data/bunnyMovie";
 import VideoModal from "../components/VideoModal";
 
 function Movies() {
