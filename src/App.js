@@ -3,6 +3,7 @@ import React, { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import SearchResult from "./pages/SearchResult";
 
 // Lazy load components
 const Login = lazy(() => import("./pages/Login"));
@@ -15,6 +16,8 @@ const Netflix = lazy(() => import("./pages/Netflix"));
 const MovieTrailer = lazy(() => import("./pages/MovieTrailer"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const PaymentConfirmation = lazy(() => import("./pages/PaymentConfirmation"));
+
+
 
 export default function App() {
   return (
@@ -36,6 +39,7 @@ export default function App() {
               element={<ProtectedRoute><Checkout /></ProtectedRoute>}
             />
             <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+            <Route path="/search-result" element={<SearchResult />} />
           </Routes>
         </Suspense>
       </Router>
