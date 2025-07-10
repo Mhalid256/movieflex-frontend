@@ -1,15 +1,19 @@
 import { signOut } from "firebase/auth";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import logo from "../assets/logo.png";
 import { firebaseAuth } from "../utils/firebase-config";
 import { FaPowerOff, FaSearch } from "react-icons/fa";
+import { searchMovies } from "../utils/tmdbApi";
+import { getBunnyVideoUrl } from "../data/bunnyMovie";
 
 export default function Navbar({ isScrolled }) {
   const [showSearch, setShowSearch] = useState(false);
   const [inputHover, setInputHover] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const navigate = useNavigate();
 
   const links = [
     { name: "Home", link: "/" },
@@ -17,6 +21,18 @@ export default function Navbar({ isScrolled }) {
     { name: "Movies", link: "/movies" },
     { name: "My List", link: "/mylist" },
   ];
+
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    if (query.trim()) {
+      const results = await searchMovies(query);
+      if (results.length > 0) {
+        const movie = results[0];
+        const bunnyUrl = getBunnyVideoUrl(movie.id);
+        navigate("/search-result", { state: { movie, bunnyUrl } });
+      }
+    }
+  };
 
   return (
     <Container>
@@ -43,7 +59,7 @@ export default function Navbar({ isScrolled }) {
         </div>
 
         <div className="right flex a-center">
-          <div className={`search ${showSearch ? "show-search" : ""}`}>
+          <form className={`search ${showSearch ? "show-search" : ""}`} onSubmit={handleSearchSubmit}>
             <button
               onFocus={() => setShowSearch(true)}
               onBlur={() => {
@@ -51,12 +67,15 @@ export default function Navbar({ isScrolled }) {
                   setShowSearch(false);
                 }
               }}
+              type="submit"
             >
               <FaSearch />
             </button>
             <input
               type="text"
               placeholder="Search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               onMouseEnter={() => setInputHover(true)}
               onMouseLeave={() => setInputHover(false)}
               onBlur={() => {
@@ -64,7 +83,7 @@ export default function Navbar({ isScrolled }) {
                 setInputHover(false);
               }}
             />
-          </div>
+          </form>
           <button onClick={() => signOut(firebaseAuth)}>
             <FaPowerOff />
           </button>
