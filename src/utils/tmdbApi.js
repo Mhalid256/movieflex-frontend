@@ -1,6 +1,8 @@
 import axios from "axios";
 
-// Use your actual TMDB API key or from .env
+
+
+// Replace with your actual TMDB API key
 const TMDB_API_KEY = "7f602bb21d9a23e77e110e48883aebf3";
 const BASE_URL = "https://api.themoviedb.org/3";
 
@@ -22,7 +24,7 @@ export const fetchNowPlayingMovies = async () => {
   return res.data.results;
 };
 
-// ✅ Fetch trailer by ID (works for both "movie" and "tv")
+// Fetch trailer by ID (works for both "movie" and "tv")
 export const fetchMovieTrailer = async (id, type = "movie") => {
   const res = await axios.get(`${BASE_URL}/${type}/${id}/videos?api_key=${TMDB_API_KEY}`);
   const trailer = res.data.results.find(video => video.type === "Trailer" && video.site === "YouTube");
@@ -32,5 +34,11 @@ export const fetchMovieTrailer = async (id, type = "movie") => {
 // Fetch popular TV shows
 export const fetchTVShows = async () => {
   const res = await axios.get(`${BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
+  return res.data.results;
+};
+
+// ✅ Search movies by query
+export const searchMovies = async (query) => {
+  const res = await axios.get(`${BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`);
   return res.data.results;
 };
