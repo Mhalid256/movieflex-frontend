@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import Navbar from "../components/Navbar"; // ✅ Make sure this exists
 import { fetchGenres, fetchMoviesByGenre, fetchMovieTrailer } from "../utils/tmdbApi";
 import { getBunnyVideoUrl } from "../data/bunnyMovie";
-import VideoModal from "../components/VideoModal";
 
 function Movies() {
   const [genres, setGenres] = useState([]);
@@ -54,7 +54,9 @@ function Movies() {
 
   return (
     <Container>
-      {/* GENRE SELECTOR */}
+      {/* ✅ Navbar restored */}
+      <Navbar />
+
       <div className="genre-selector">
         {genres.map((genre) => (
           <button
@@ -67,7 +69,6 @@ function Movies() {
         ))}
       </div>
 
-      {/* MOVIES LIST */}
       <div className="category">
         <h2>{genres.find((g) => g.id === selectedGenre)?.name || "Movies"}</h2>
         <div className="slider">
@@ -90,7 +91,6 @@ function Movies() {
         </div>
       </div>
 
-      {/* VIDEO MODAL */}
       {showModal && videoUrl && (
         <div className={`hover-preview ${modalType === "full" ? "full" : "trailer"}`}>
           <button className="close-button" onClick={closeModal}>×</button>
@@ -108,137 +108,3 @@ function Movies() {
     </Container>
   );
 }
-
-const Container = styled.div`
-  background-color: black;
-  color: white;
-  padding-bottom: 2rem;
-
-  .genre-selector {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    padding: 2rem 5vw;
-    button {
-      padding: 0.5rem 1.5rem;
-      background-color: #333;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: 0.3s ease;
-      &:hover, &.active {
-        background-color: #e50914;
-      }
-    }
-  }
-
-  .category {
-    margin: 2rem 5vw;
-
-    h2 {
-      margin-bottom: 1rem;
-    }
-
-    .slider {
-      display: flex;
-      gap: 1rem;
-      overflow-x: scroll;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      padding-bottom: 1rem;
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
-
-      .movie {
-        position: relative;
-        min-width: 200px;
-        cursor: pointer;
-
-        @media (max-width: 768px) {
-          min-width: 150px;
-        }
-
-        img {
-          width: 100%;
-          border-radius: 5px;
-          display: block;
-        }
-
-        .hover-buttons {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          display: none;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          gap: 0.5rem;
-          background-color: rgba(0, 0, 0, 0.6);
-          border-radius: 5px;
-
-          button {
-            padding: 0.5rem 1rem;
-            border: none;
-            color: white;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-          }
-
-          .trailer-button {
-            background-color: red;
-          }
-
-          .full-button {
-            background-color: #111;
-          }
-        }
-
-        &:hover .hover-buttons {
-          display: flex;
-        }
-      }
-    }
-  }
-
-  .hover-preview {
-    position: fixed;
-    z-index: 1000;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-    &.trailer {
-      width: 320px;
-      height: 180px;
-    }
-
-    &.full {
-      width: 80vw;
-      height: 80vh;
-    }
-
-    .close-button {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      background: transparent;
-      color: white;
-      font-size: 2rem;
-      border: none;
-      cursor: pointer;
-      z-index: 1001;
-    }
-  }
-`;
-
-export default Movies;
