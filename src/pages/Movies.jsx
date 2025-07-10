@@ -1,104 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import Navbar from "../components/Navbar";
 import { fetchGenres, fetchMoviesByGenre, fetchMovieTrailer } from "../utils/tmdbApi";
 import { getBunnyVideoUrl } from "../data/bunnyMovie";
-
-const Container = styled.div`
-  padding: 20px;
-  color: white;
-  background-color: #000;
-  min-height: 100vh;
-
-  .genre-selector {
-    margin: 20px 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .genre-selector button {
-    background-color: #444;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-  }
-
-  .genre-selector button.active {
-    background-color: #f90;
-    color: black;
-  }
-
-  .category h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
-  }
-
-  .slider {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-  }
-
-  .movie {
-    position: relative;
-    min-width: 180px;
-    max-width: 200px;
-  }
-
-  .movie img {
-    width: 100%;
-    border-radius: 10px;
-  }
-
-  .hover-buttons {
-    margin-top: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .hover-buttons button {
-    background-color: #f90;
-    color: #000;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .hover-preview {
-    position: fixed;
-    top: 10%;
-    left: 10%;
-    width: 80%;
-    height: 80%;
-    background: rgba(0, 0, 0, 0.95);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    padding: 20px;
-  }
-
-  .hover-preview iframe {
-    width: 100%;
-    height: 100%;
-  }
-
-  .close-button {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    font-size: 30px;
-    background: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-  }
-`;
+import VideoModal from "../components/VideoModal";
+import { useNavigate } from "react-router-dom";
 
 function Movies() {
   const [genres, setGenres] = useState([]);
@@ -107,6 +12,8 @@ function Movies() {
   const [videoUrl, setVideoUrl] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("trailer");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const init = async () => {
@@ -150,8 +57,12 @@ function Movies() {
 
   return (
     <Container>
-      <Navbar />
+      {/* BACK TO HOME BUTTON */}
+      <div className="back-button">
+        <button onClick={() => navigate("/")}>← Back to Home</button>
+      </div>
 
+      {/* GENRE SELECTOR */}
       <div className="genre-selector">
         {genres.map((genre) => (
           <button
@@ -164,6 +75,7 @@ function Movies() {
         ))}
       </div>
 
+      {/* MOVIES LIST */}
       <div className="category">
         <h2>{genres.find((g) => g.id === selectedGenre)?.name || "Movies"}</h2>
         <div className="slider">
@@ -186,12 +98,15 @@ function Movies() {
         </div>
       </div>
 
+      {/* VIDEO MODAL */}
       {showModal && videoUrl && (
         <div className={`hover-preview ${modalType === "full" ? "full" : "trailer"}`}>
           <button className="close-button" onClick={closeModal}>×</button>
           <iframe
             src={videoUrl}
             title="Video Preview"
+            width={modalType === "full" ? "80%" : "300"}
+            height={modalType === "full" ? "80%" : "170"}
             style={{ border: 0, borderRadius: "10px" }}
             allow="autoplay; encrypted-media"
             allowFullScreen
@@ -201,5 +116,158 @@ function Movies() {
     </Container>
   );
 }
+
+const Container = styled.div`
+  background-color: black;
+  color: white;
+  padding-bottom: 2rem;
+
+  .back-button {
+    padding: 1rem 5vw;
+    button {
+      background-color: transparent;
+      color: white;
+      border: 2px solid white;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.3s ease;
+
+      &:hover {
+        background-color: white;
+        color: black;
+      }
+    }
+  }
+
+  .genre-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 2rem 5vw;
+
+    button {
+      padding: 0.5rem 1.5rem;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      &:hover,
+      &.active {
+        background-color: #e50914;
+      }
+    }
+  }
+
+  .category {
+    margin: 2rem 5vw;
+
+    h2 {
+      margin-bottom: 1rem;
+    }
+
+    .slider {
+      display: flex;
+      gap: 1rem;
+      overflow-x: scroll;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 1rem;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .movie {
+        position: relative;
+        min-width: 200px;
+        cursor: pointer;
+
+        @media (max-width: 768px) {
+          min-width: 150px;
+        }
+
+        img {
+          width: 100%;
+          border-radius: 5px;
+          display: block;
+        }
+
+        .hover-buttons {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: none;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          gap: 0.5rem;
+          background-color: rgba(0, 0, 0, 0.6);
+          border-radius: 5px;
+
+          button {
+            padding: 0.5rem 1rem;
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+          }
+
+          .trailer-button {
+            background-color: red;
+          }
+
+          .full-button {
+            background-color: #111;
+          }
+        }
+
+        &:hover .hover-buttons {
+          display: flex;
+        }
+      }
+    }
+  }
+
+  .hover-preview {
+    position: fixed;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    &.trailer {
+      width: 320px;
+      height: 180px;
+    }
+
+    &.full {
+      width: 80vw;
+      height: 80vh;
+    }
+
+    .close-button {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: transparent;
+      color: white;
+      font-size: 2rem;
+      border: none;
+      cursor: pointer;
+      z-index: 1001;
+    }
+  }
+`;
 
 export default Movies;
