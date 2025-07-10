@@ -15,6 +15,7 @@ export const getBunnyVideoUrl = (tmdbId) => {
     713364:"https://curemindset.b-cdn.net/movies/CLOWN%20IN%20A%20CORNFIELD%20JR.mp4",//Clown in a Cornfield JR
     158426:"https://curemindset.b-cdn.net/movies/COLLISION%202022.___VJ%20KRIS%20SWEET.mp4",//Collision 2022
     1127110:"https://curemindset.b-cdn.net/movies/DIABLO%20JR.mp4",//Diablo JR
+    302946:"https://curemindset.b-cdn.net/movies/THE%20ACCOUNTANT%202____VJ%20JR.2025.mp4",//Accountant 2
 
     // Add more mappings as you upload
   };
