@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import Navbar from "../components/Navbar";
 import { fetchGenres, fetchMoviesByGenre, fetchMovieTrailer } from "../utils/tmdbApi";
 import { getBunnyVideoUrl } from "../data/bunnyMovie";
 import VideoModal from "../components/VideoModal";
 
 function Movies() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [genres, setGenres] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState(null);
   const [movies, setMovies] = useState([]);
@@ -30,11 +28,6 @@ function Movies() {
       fetchMoviesByGenre(selectedGenre).then(setMovies);
     }
   }, [selectedGenre]);
-
-  window.onscroll = () => {
-    setIsScrolled(window.pageYOffset === 0 ? false : true);
-    return () => (window.onscroll = null);
-  };
 
   const handleMovieHover = async (movieId) => {
     const trailerKey = await fetchMovieTrailer(movieId);
@@ -61,8 +54,7 @@ function Movies() {
 
   return (
     <Container>
-      <Navbar isScrolled={isScrolled} />
-
+      {/* GENRE SELECTOR */}
       <div className="genre-selector">
         {genres.map((genre) => (
           <button
@@ -75,6 +67,7 @@ function Movies() {
         ))}
       </div>
 
+      {/* MOVIES LIST */}
       <div className="category">
         <h2>{genres.find((g) => g.id === selectedGenre)?.name || "Movies"}</h2>
         <div className="slider">
@@ -97,6 +90,7 @@ function Movies() {
         </div>
       </div>
 
+      {/* VIDEO MODAL */}
       {showModal && videoUrl && (
         <div className={`hover-preview ${modalType === "full" ? "full" : "trailer"}`}>
           <button className="close-button" onClick={closeModal}>×</button>
@@ -118,12 +112,13 @@ function Movies() {
 const Container = styled.div`
   background-color: black;
   color: white;
+  padding-bottom: 2rem;
 
   .genre-selector {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     padding: 2rem 5vw;
-    flex-wrap: wrap;
     button {
       padding: 0.5rem 1.5rem;
       background-color: #333;
@@ -140,19 +135,31 @@ const Container = styled.div`
 
   .category {
     margin: 2rem 5vw;
+
     h2 {
       margin-bottom: 1rem;
     }
+
     .slider {
       display: flex;
       gap: 1rem;
       overflow-x: scroll;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
       padding-bottom: 1rem;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       .movie {
         position: relative;
         min-width: 200px;
         cursor: pointer;
+
+        @media (max-width: 768px) {
+          min-width: 150px;
+        }
 
         img {
           width: 100%;
@@ -188,7 +195,7 @@ const Container = styled.div`
           }
 
           .full-button {
-            background-color: black;
+            background-color: #111;
           }
         }
 
@@ -209,10 +216,12 @@ const Container = styled.div`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+
     &.trailer {
       width: 320px;
       height: 180px;
     }
+
     &.full {
       width: 80vw;
       height: 80vh;
