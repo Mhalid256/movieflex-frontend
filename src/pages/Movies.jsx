@@ -1,9 +1,104 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import Navbar from "../components/Navbar"; // ✅ Make sure this exists
+import Navbar from "../components/Navbar";
 import { fetchGenres, fetchMoviesByGenre, fetchMovieTrailer } from "../utils/tmdbApi";
 import { getBunnyVideoUrl } from "../data/bunnyMovie";
-//import Container from "../components/Container";
+
+const Container = styled.div`
+  padding: 20px;
+  color: white;
+  background-color: #000;
+  min-height: 100vh;
+
+  .genre-selector {
+    margin: 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .genre-selector button {
+    background-color: #444;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+
+  .genre-selector button.active {
+    background-color: #f90;
+    color: black;
+  }
+
+  .category h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .slider {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+  }
+
+  .movie {
+    position: relative;
+    min-width: 180px;
+    max-width: 200px;
+  }
+
+  .movie img {
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  .hover-buttons {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .hover-buttons button {
+    background-color: #f90;
+    color: #000;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .hover-preview {
+    position: fixed;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+
+  .hover-preview iframe {
+    width: 100%;
+    height: 100%;
+  }
+
+  .close-button {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 30px;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+`;
 
 function Movies() {
   const [genres, setGenres] = useState([]);
@@ -55,7 +150,6 @@ function Movies() {
 
   return (
     <Container>
-      {/* ✅ Navbar restored */}
       <Navbar />
 
       <div className="genre-selector">
@@ -98,8 +192,6 @@ function Movies() {
           <iframe
             src={videoUrl}
             title="Video Preview"
-            width={modalType === "full" ? "80%" : "300"}
-            height={modalType === "full" ? "80%" : "170"}
             style={{ border: 0, borderRadius: "10px" }}
             allow="autoplay; encrypted-media"
             allowFullScreen
@@ -109,3 +201,5 @@ function Movies() {
     </Container>
   );
 }
+
+export default Movies;
