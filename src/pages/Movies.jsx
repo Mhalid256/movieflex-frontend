@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Navbar from "../components/Navbar"; // ✅ Make sure this exists
 import { fetchGenres, fetchMoviesByGenre, fetchMovieTrailer } from "../utils/tmdbApi";
 import { getBunnyVideoUrl } from "../data/bunnyMovie";
+import Container from "../components/Container";
 
 function Movies() {
   const [genres, setGenres] = useState([]);
