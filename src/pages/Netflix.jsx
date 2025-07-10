@@ -1,276 +1,227 @@
-// [Your imports remain unchanged]
-import React, { useEffect, useState } from "react";
+import { signOut } from "firebase/auth";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import Navbar from "../components/Navbar";
-import backgroundImage from "../assets/home.jpg";
-import MovieLogo from "../assets/homeTitle.webp";
-import { FaPlay } from "react-icons/fa";
-import { AiOutlineInfoCircle } from "react-icons/ai";
-import { fetchGenres, fetchMoviesByGenre, fetchMovieTrailer } from "../utils/tmdbApi";
+import logo from "../assets/logo.png";
+import { firebaseAuth } from "../utils/firebase-config";
+import { FaPowerOff, FaSearch } from "react-icons/fa";
+import { searchMovies } from "../utils/tmdbApi";
 import { getBunnyVideoUrl } from "../data/bunnyMovie";
-import VideoModal from "../components/VideoModal";
 
-function Netflix() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [videoUrl, setVideoUrl] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState("trailer");
+export default function Navbar({ isScrolled }) {
+  const [showSearch, setShowSearch] = useState(false);
+  const [inputHover, setInputHover] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const loadAllGenresAndMovies = async () => {
-      const genres = await fetchGenres();
-      const genreData = await Promise.all(
-        genres.map(async (genre) => {
-          const movies = await fetchMoviesByGenre(genre.id);
-          return { genre, movies };
-        })
-      );
-      setCategories(genreData);
-    };
-    loadAllGenresAndMovies();
-  }, []);
+  const links = [
+    { name: "Home", link: "/" },
+    { name: "TV Shows", link: "/tv" },
+    { name: "Movies", link: "/movies" },
+    { name: "My List", link: "/mylist" },
+  ];
 
-  window.onscroll = () => {
-    setIsScrolled(window.pageYOffset === 0 ? false : true);
-    return () => (window.onscroll = null);
-  };
-
-  const handleMovieHover = async (movieId) => {
-    const trailerKey = await fetchMovieTrailer(movieId);
-    if (trailerKey) {
-      setVideoUrl(`https://www.youtube.com/embed/${trailerKey}?autoplay=1`);
-      setModalType("trailer");
-      setShowModal(true);
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    if (query.trim()) {
+      const results = await searchMovies(query);
+      if (results.length > 0) {
+        const movie = results[0];
+        const bunnyUrl = getBunnyVideoUrl(movie.id);
+        navigate("/search-result", { state: { movie, bunnyUrl } });
+      }
     }
-  };
-
-  const handleMovieClick = (movieId) => {
-    const bunnyUrl = getBunnyVideoUrl(movieId);
-    if (bunnyUrl) {
-      setVideoUrl(bunnyUrl);
-      setModalType("full");
-      setShowModal(true);
-    }
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setVideoUrl("");
   };
 
   return (
     <Container>
-      <Navbar isScrolled={isScrolled} />
-      <div className="hero">
-        <img src={backgroundImage} alt="background" className="background-image" />
-        <div className="container">
-          <div className="logo">
-            <img src={MovieLogo} alt="Movie Logo" />
+      <nav className={`${isScrolled ? "scrolled" : ""} flex`}>
+        <div className="left flex a-center">
+          <div className="brand flex a-center j-center">
+            <img src={logo} alt="Logo" />
           </div>
-          <div className="buttons flex">
-            <button className="flex j-center a-center">
-              <FaPlay />
-              Play
-            </button>
-            <button className="flex j-center a-center">
-              <AiOutlineInfoCircle />
-              More Info
-            </button>
-          </div>
-        </div>
-      </div>
 
-      {categories.map(({ genre, movies }) => (
-        <div className="category" key={genre.id}>
-          <h2>{genre.name}</h2>
-          <div className="slider">
-            {movies.map((movie) => (
-              <div className="movie" key={movie.id}>
-                <img
-                  src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
-                  alt={movie.title}
-                />
-                <div className="hover-buttons">
-                  <button
-                    className="trailer-button"
-                    onClick={() => handleMovieHover(movie.id)}
-                  >
-                    Watch Trailer
-                  </button>
-                  <button
-                    className="full-button"
-                    onClick={() => handleMovieClick(movie.id)}
-                  >
-                    Watch Full Movie
-                  </button>
-                </div>
-              </div>
+          {/* Hamburger / Close Icon */}
+          <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? "✖" : "☰"}
+          </div>
+
+          <ul className={`links flex ${menuOpen ? "mobile-open" : ""}`}>
+            {links.map(({ name, link }) => (
+              <li key={name}>
+                <Link to={link} onClick={() => setMenuOpen(false)}>
+                  {name}
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
-      ))}
 
-      {showModal && videoUrl && (
-        <div className={`hover-preview ${modalType === "full" ? "full" : "trailer"}`}>
-          <button className="close-button" onClick={closeModal}>×</button>
-          <iframe
-            src={videoUrl}
-            title="Video Preview"
-            width={modalType === "full" ? "80%" : "300"}
-            height={modalType === "full" ? "80%" : "170"}
-            style={{ border: 0, borderRadius: "10px" }}
-            allow="autoplay; encrypted-media"
-            allowFullScreen
-          />
+        <div className="right flex a-center">
+          <form className={`search ${showSearch ? "show-search" : ""}`} onSubmit={handleSearchSubmit}>
+            <button
+              onFocus={() => setShowSearch(true)}
+              onBlur={() => {
+                if (!inputHover) {
+                  setShowSearch(false);
+                }
+              }}
+              type="submit"
+            >
+              <FaSearch />
+            </button>
+            <input
+              type="text"
+              placeholder="Search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onMouseEnter={() => setInputHover(true)}
+              onMouseLeave={() => setInputHover(false)}
+              onBlur={() => {
+                setShowSearch(false);
+                setInputHover(false);
+              }}
+            />
+          </form>
+          <button onClick={() => signOut(firebaseAuth)}>
+            <FaPowerOff />
+          </button>
         </div>
-      )}
+      </nav>
     </Container>
   );
 }
 
+// Styled Component
 const Container = styled.div`
-  background-color: black;
-  color: white;
+  .scrolled {
+    background-color: black;
+  }
+  nav {
+    position: sticky;
+    top: 0;
+    height: 6.5rem;
+    width: 100%;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    z-index: 2;
+    padding: 0 4rem;
+    align-items: center;
+    transition: 0.3s ease-in-out;
+    background-color: transparent;
 
-  .hero {
-    position: relative;
-    .background-image {
-      filter: brightness(60%);
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-    }
-    .container {
-      position: absolute;
-      bottom: 5rem;
-      padding-left: 5vw;
-      .logo img {
-        width: 100%;
-        max-width: 400px;
+    .left {
+      gap: 2rem;
+      .brand {
+        img {
+          height: 4rem;
+        }
       }
-      .buttons {
-        margin-top: 2rem;
+      .hamburger {
+        display: none;
+        font-size: 2.5rem;
+        cursor: pointer;
+        color: white;
+      }
+      .links {
+        list-style-type: none;
+        gap: 2rem;
         display: flex;
-        gap: 1rem;
-        button {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.7rem 1.5rem;
-          border: none;
-          background-color: #e50914;
-          color: white;
-          cursor: pointer;
-          border-radius: 5px;
-          &:nth-of-type(2) {
-            background-color: rgba(109, 109, 110, 0.7);
+        li {
+          a {
+            color: white;
+            text-decoration: none;
           }
+        }
+      }
+    }
+
+    .right {
+      gap: 1rem;
+      button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        &:focus {
+          outline: none;
+        }
+        svg {
+          color: #f34242;
+          font-size: 1.2rem;
+        }
+      }
+      .search {
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
+        justify-content: center;
+        padding: 0.2rem;
+        padding-left: 0.5rem;
+        button {
+          background-color: transparent;
+          border: none;
+          &:focus {
+            outline: none;
+          }
+          svg {
+            color: white;
+            font-size: 1.2rem;
+          }
+        }
+        input {
+          width: 0;
+          opacity: 0;
+          visibility: hidden;
+          transition: 0.3s ease-in-out;
+          background-color: transparent;
+          border: none;
+          color: white;
+          &:focus {
+            outline: none;
+          }
+        }
+      }
+      .show-search {
+        border: 1px solid white;
+        background-color: rgba(0, 0, 0, 0.6);
+        input {
+          width: 100%;
+          opacity: 1;
+          visibility: visible;
+          padding: 0.3rem;
         }
       }
     }
   }
 
-  .category {
-    margin: 2rem 5vw;
-    h2 {
-      margin-bottom: 1rem;
-    }
-    .slider {
-      display: flex;
-      gap: 1rem;
-      overflow-x: scroll;
-      padding-bottom: 1rem;
-
-      .movie {
-        position: relative;
-        min-width: 200px;
-        cursor: pointer;
-
-        img {
-          width: 100%;
-          border-radius: 5px;
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    nav {
+      padding: 0 1rem;
+      .left {
+        .hamburger {
           display: block;
         }
-
-        .hover-buttons {
+        .links {
+          display: none;
           position: absolute;
-          top: 0;
+          top: 6.5rem;
           left: 0;
           width: 100%;
-          height: 100%;
-          display: none;
+          background: black;
           flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          gap: 0.5rem;
-          background-color: rgba(0, 0, 0, 0.6);
-          border-radius: 5px;
-
-          button {
-            padding: 0.5rem 1rem;
-            border: none;
-            color: white;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-          }
-
-          .trailer-button {
-            background-color: red;
-          }
-
-          .full-button {
-            background-color: black;
+          text-align: center;
+          li {
+            padding: 1rem 0;
+            border-bottom: 1px solid #333;
           }
         }
-
-        &:hover .hover-buttons {
+        .links.mobile-open {
           display: flex;
         }
       }
-    }
-  }
-
-  @media (max-width: 768px) {
-    /* Mobile styles */
-  }
-
-  @media (min-width: 768px) and (max-width: 1024px) {
-    /* Tablet styles */
-  }
-
-  .hover-preview {
-    position: fixed;
-    z-index: 1000;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    &.trailer {
-      width: 320px;
-      height: 180px;
-    }
-    &.full {
-      width: 80vw;
-      height: 80vh;
-    }
-
-    .close-button {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      background: transparent;
-      color: white;
-      font-size: 2rem;
-      border: none;
-      cursor: pointer;
-      z-index: 1001;
     }
   }
 `;
-
-export default Netflix;

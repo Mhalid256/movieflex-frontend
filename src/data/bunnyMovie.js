@@ -25,7 +25,8 @@ export const movieMap = {
   1261050: "https://curemindset.b-cdn.net/movies/The.Quiet.Ones%20ICE%20P.mp4",
   628900: "https://curemindset.b-cdn.net/movies/THE%20CONTRACTOR%20.2010%20-%20JINGO.mp4",
   131631: "https://curemindset.b-cdn.net/movies/THE%20HUNGER%20GAMES%20MOCKINGJAY%2002.___VJ%20ICE%20P.mp4",
-  11459: "https://curemindset.b-cdn.net/movies/Sky-High_720p%20VJ%20SOUL.mp4"
+  11459: "https://curemindset.b-cdn.net/movies/Sky-High_720p%20VJ%20SOUL.mp4",
+  
 };
 
 export const getBunnyVideoUrl = (tmdbId) => {
